@@ -53,6 +53,7 @@ export default class GameRoom extends React.Component {
             handleNightLogic(game, ourId)
           } else {
             handleDayLogic(game, ourId)
+            checkMajority()
           }
         })
       });
@@ -140,6 +141,11 @@ export default class GameRoom extends React.Component {
     game.majorityReached = false
     //updating game state in DB
     db.update(game)
+  }
+
+  handleMajority(game) {
+    const totalPlayers = game.villagers.length + game.werewolves.length
+    
   }
 
   render() {
