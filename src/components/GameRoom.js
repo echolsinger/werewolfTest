@@ -90,7 +90,7 @@ export default class GameRoom extends React.Component {
       this.setState({ refCounter: this.state.refCounter + 1 });
     }
   }
-  handleNightLogic(game, ourId) {
+  handleNightTransition(game, ourId) {
     if (game.villagers.length === 0){
       assignRoles(game)
     }
@@ -102,23 +102,46 @@ export default class GameRoom extends React.Component {
           villager.id !== game.werewolfChoice
         })
         game.dead.push(game.werewolfChoice)
-        game.medicChoice = null
-        game.numVillagers = game.villagers.length-1
-        game.votesWerewolves = null
-        game.checkWerewolf = false
-        game.checkMedic = false
-        game.checkSeer = false
+        
       }
     } //outer IF
     else {
       return
     }
     game.Night = false
+    game.medicChoice = null
+    game.votesWerewolves = null
+    game.checkWerewolf = false
+    game.checkMedic = false
+    game.checkSeer = false
     //updating game state in DB
     db.update(game)
   }
-  handleDayLogic(game, ourId) {
+
+  handleDayTransition(game, ourId) {
+    if (game.majorityReached){
+      if (game.villagers.includes(game.villagersChoice)){
+        games.villagers = game.villagers.filter(villager => {
+          villager.id !== game.villagersChoice
+        })
+      } else {
+        games.werewolves = game.werewolves.filter(werewolf => {
+          werewolf.id !== game.villagersChoice
+        })
+      
+      }
+      game.dead.push(game.villagersChoice)
+    } //outer IF
+    else {
+      return
+    }
+    game.night = true
+    game.villagersChoice = null
+    game.majorityReached = false
+    //updating game state in DB
+    db.update(game)
   }
+
   render() {
     return (
       <div>
